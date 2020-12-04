@@ -242,7 +242,7 @@ _Pvt_Extensions
 
 # Visual Studio Code plugins
 .ionide
-
+.vscode
 # Paket dependency manager
 .paket/paket.exe
 paket-files/
