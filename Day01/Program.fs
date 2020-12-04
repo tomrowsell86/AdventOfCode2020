@@ -1,25 +1,4 @@
-open System
-
-
-
-let rec scanForSum  = function 
-    | hd :: adj :: tl ->
-        if hd + adj = 2020.0m
-        then    
-            hd * adj
-        else 
-            scanForSum (hd::tl)
-    | _ -> 0.0m
-    
-let rec listWalk = function
-    | hd :: tl ->
-        let result = scanForSum (hd::tl)
-        if result <> 0.0m
-        then
-            result
-        else
-            listWalk tl
-    | hd -> 0.0m
+open PartOne
 
 [<EntryPoint>]
 let main argv =
@@ -28,9 +7,9 @@ let main argv =
        |> List.ofArray 
        |> List.map decimal
      
-    let result = listWalk expenses
+    let result = traverseList expenses
 
+    let resultB = PartTwo.outer PartTwo.scanForSum expenses
 
-
-    printfn "Final Result is %s" (result.ToString()) 
+    printfn "Final Result is %s" (resultB.ToString()) 
     0 // return an integer exit code

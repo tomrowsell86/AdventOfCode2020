@@ -4,7 +4,9 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Program.fs" />
     <Content Include="input.txt" />
+    <Compile Include="partOne.fs" />
+    <Compile Include="partTwo.fs" />
+    <Compile Include="Program.fs" />
   </ItemGroup>
 </Project>
