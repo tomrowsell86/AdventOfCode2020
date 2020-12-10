@@ -1,48 +1,8 @@
 // Learn more about F# at http://docs.microsoft.com/dotnet/fsharp
-open System
+open Types
+open Utils 
 
-type Occurrence = { Lower:int; Upper:int }
-type Policy = { BoundLetter : char ;   Occurance : Occurrence  }
-type PolicyPwPair = { Policy : Policy ; Password : string }
-type StringSplit = { Chars : list<char> ; Index : int}
-
-let splitString (s:string)(splitChar : char) =  
-    let rec splitChars (a : list<char>) (splitChar : char) = 
-        let rec findSplit (index : int) (accString : list<char>) = function  
-        | hd::tl -> 
-            if hd = splitChar
-            then 
-                { Index = index + 1; Chars = accString }//(index , accString)
-            else   
-                findSplit (index + 1) (hd::accString) tl
-        | [] ->  { Index = index; Chars = accString }
-        let result = findSplit 0 List.empty a
-        
-        if result.Index = 0
-        then
-            []
-        else
-            (String(List.toArray (List.rev result.Chars)))::(splitChars (List.skip result.Index a) splitChar)
-    splitChars (List.ofArray (s.ToCharArray())) splitChar 
-
-let parsePasswordPolicy line = 
-    let parts = splitString line ' '
-    let parseRange = function
-    | hd :: _ ->
-        let parseRange = function
-        | lower::[upper]->
-            Some{Lower = lower; Upper = upper}
-   
-        | []|_ -> None
-        splitString hd '-'  |>  List.map(int) |> parseRange
-    | [] -> None
-    
-    let range = parseRange parts
-    {Password = List.last parts ; Policy = {BoundLetter = char (List.last(splitString (List.item 1 parts ) ':')) ; Occurance = range.Value } }  
-
-
- 
-let rec recurseValidPasswords = function
+let rec partA = function
 | hd::tl ->  
     let rec passwordMeetsPolicy (policy:Policy) (index:int) = function
     | hd::tl -> 
@@ -68,7 +28,7 @@ let rec recurseValidPasswords = function
                 passwordMeetsPolicy policy (index) tl
     |[] -> false
 
-    passwordMeetsPolicy hd.Policy 0 (Array.toList (hd.Password.ToCharArray())) :: recurseValidPasswords tl
+    passwordMeetsPolicy hd.Policy 0 (Array.toList (hd.Password.ToCharArray())) :: partA tl
 | [] -> List.empty
 
     
@@ -77,6 +37,6 @@ let main argv =
     let passwords = System.IO.File.ReadAllLines("input.txt") |> List.ofArray 
 
     let policies = passwords |> List.map parsePasswordPolicy 
-    let validCount =  List.where (id) (recurseValidPasswords policies)  
+    let validCount =  List.where (id) (partA policies)  
     printfn "number of valid passwords is : %d" (List.length validCount)
     0 // return an integer exit code
