@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Validation.fs" />
     <Compile Include="Program.fs" />
     <Content Include="input.txt" />
   </ItemGroup>
