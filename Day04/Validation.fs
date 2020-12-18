@@ -4,7 +4,7 @@ open System
 open System.Text.RegularExpressions
 
 let (|Field|_|) fieldName str =
-    let m = Regex(fieldName + ":(#?\w*)").Match(str)
+    let m = Regex(fieldName + ":([a-zA-Z0-9#]*)").Match(str)
     if m.Success
     then Some(List.head (List.skip 1 [ for x in m.Groups -> x.Value ]))
     else None
@@ -22,7 +22,7 @@ let (|Inches|Metric|None|) str =
         None
 
 let (|Colour|None|) str =
-    if Regex("#{1}[0-9a-fA-F]{6}").IsMatch(str) then Colour else None
+    if Regex("#[0-9a-fA-F]{6}$").IsMatch(str) then Colour else None
 
 let validateField =
     let inclusiveYearRange (raw: string) (lower: int) (upper: int) =
@@ -59,6 +59,6 @@ let validateField =
         | "hzl"
         | "oth" -> true
         | _ -> false
-    | Field "pid" x -> Regex("\d{9}").IsMatch(x)
+    | Field "pid" x -> Regex("^\d{9}$").IsMatch(x)
     | Field "cid" _ -> true
     | _ -> false

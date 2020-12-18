@@ -30,10 +30,10 @@ let main _ =
 
         getPassports xs
 
-    let dumpRecord (record:list<string>) = 
-        let join a b =  match b with 
-                        | "eyr" -> a + " " + b 
-                        | _ -> a
+    let dumpRecord (record:list<String>) = 
+        let join (a:String) (b:String) = a + " " + b 
+           
+                    
         printfn "%s" (List.fold join "" (List.sort record))
 
     let recordFilter record =
