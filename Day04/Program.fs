@@ -3,11 +3,10 @@ open Validation
 open System
 
 [<EntryPoint>]
-let main argv =
+let main _ =
   
     let passportList xs =  
         let rec getPassports xs = 
-
             let getLineFields (s:String) = Array.toList (s.Split(' ', StringSplitOptions.RemoveEmptyEntries))
             let getBlockFields fields = List.collect getLineFields fields
             [
@@ -22,10 +21,7 @@ let main argv =
                     yield getBlockFields xs
                 else
                     let splitList = List.splitAt nextEmptyIndex xs
-                    
-
                     let fields = fst splitList |> getBlockFields 
-
                     yield fields 
                     if not (List.isEmpty (snd splitList))
                     then
@@ -34,50 +30,27 @@ let main argv =
 
         getPassports xs
 
+    let dumpRecord (record:list<string>) = 
+        let join a b =  match b with 
+                        | "eyr" -> a + " " + b 
+                        | _ -> a
+        printfn "%s" (List.fold join "" (List.sort record))
+
     let recordFilter record =
         let rec loop = function 
         | hd::tl -> 
-            let inclusiveYearRange (raw:string) (lower:int) (upper:int) = 
-                if raw.Length <> 4
-                then    
-                    false 
-                else
-                    let year = Int32.Parse(raw)
-                    year >= lower && year <= upper
-            let validateField = function
-            | Field "byr" x -> 
-                if inclusiveYearRange x 1920 2002
-                then
-                    loop tl
-                else
-                    false
-            | Field "iyr" x -> 
-                if inclusiveYearRange x 2010 2020
-                then    
-                    loop tl
-                else
-                    false
-            | Field "eyr" x -> 
-                if inclusiveYearRange x 2020 2030
-                then    
-                    loop tl
-                else
-                    false
-            
-            | _ -> true
             if validateField hd 
             then
                 loop tl
             else
                 false
         | [] -> true
-        if not(List.length record = 8 || (not (List.exists (fun (s:String) -> s.StartsWith("cid")) record) && List.length record = 7))
-        then
-            false
-        else
-            loop record
+        loop record
 
-    let validPassports = passportList (Seq.toList (System.IO.File.ReadLines("input.txt"))) |> List.where recordFilter
-
-    printfn "Valid passport count %d" (List.length validPassports)
+    let passports = passportList (Seq.toList (System.IO.File.ReadLines("input.txt")))  |> 
+                    List.where (fun record -> List.length record = 8 || (not (List.exists (fun (s:String) -> s.StartsWith("cid")) record) && List.length record = 7))
+    let validPassportsPartB = passports |> List.where recordFilter
+    List.iter dumpRecord validPassportsPartB
+    printfn "Part a full fields passport count : %d " (List.length passports)
+    printfn "Valid passport count %d" (List.length validPassportsPartB)
     0 // return an integer exit code
