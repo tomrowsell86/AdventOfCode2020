@@ -1,23 +1,24 @@
 module Day10
 open System 
-let scanAdapters (joltages:list<int>) : (List<int>) = 
-    let rec scanLoopOuter = function
+let scanAdapters (joltages:list<int>) : (list<int>) = 
+    let rec calculateHeadDiff (joltages:list<int>) accumulatedDiffs = 
+        match joltages with
+        | hd::adj::tl -> 
+            let diff = adj - hd
+            let next = calculateHeadDiff (hd::tl)
+            if diff > 0 && diff <= 3
+            then
+                next (diff::accumulatedDiffs)
+            else
+                next accumulatedDiffs
+        | [] | [_]-> if List.isEmpty accumulatedDiffs then 3 else (List.min accumulatedDiffs) 
+                
+     
+    let rec composeDiffList = function
         | hd::tl ->
-            let rec scanLoopInner (joltages:list<int>) diffs = 
-                match joltages with
-                | hd::adj::tl -> 
-                    let diff = adj - hd
-                    let next = scanLoopInner (hd::tl)
-                    if diff > 0 && diff <= 3
-                    then
-                        next (diff::diffs)
-                    else
-                        next diffs
-                | [] | [_]-> 
-                        if List.isEmpty diffs then -99999 else List.min diffs
-                    
-            let next = scanLoopInner (hd::tl) List.empty
-            next::(scanLoopOuter tl)
+                   
+            let next = calculateHeadDiff (hd::tl) List.empty
+            next::(composeDiffList tl)
         | [] -> []
-    3::(scanLoopOuter (0::(List.sort joltages))) 
+    composeDiffList (0::(List.sort joltages)) 
 
