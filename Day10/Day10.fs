@@ -22,3 +22,15 @@ let scanAdapters (joltages:list<int>) : (list<int>) =
         | [] -> []
     composeDiffList (0::(List.sort joltages)) 
 
+let calcChargingPermutations diffList = 
+    let rec countPermutations counter = function
+        | hd::adj::tl ->
+            printfn "Head is : %d" hd
+            if hd + adj < 4
+            then
+                countPermutations (counter + 1 ) (hd::tl)
+            else
+                countPermutations counter tl
+        | [_] | [] -> counter
+    countPermutations 0 diffList
+
